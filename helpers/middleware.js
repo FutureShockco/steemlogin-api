@@ -57,10 +57,7 @@ const strategy = (req, res, next) => {
 
   if (token) {
     try {
-      console.log(token)
-
       const decoded = Buffer.from(b64uToB64(token), 'base64').toString();
-      console.log(decoded)
       const tokenObj = JSON.parse(decoded);
       const signedMessage = tokenObj.signed_message;
       if (
@@ -79,8 +76,6 @@ const strategy = (req, res, next) => {
           authors: tokenObj.authors,
           timestamp: tokenObj.timestamp,
         });
-        console.log(tokenObj)
-
         const username = tokenObj.authors[0];
         verify(message, username, tokenObj.signatures[0], (err, isValid) => {
           if (!err && isValid) {
