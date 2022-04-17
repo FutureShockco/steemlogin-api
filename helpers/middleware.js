@@ -4,7 +4,7 @@ const { verify } = require('./token');
 const { getAppProfile, b64uToB64 } = require('./utils');
 const client = require('./client');
 const config = require('../config.json');
-
+const blacklist = ['woxauto']
 /**
  * Check if user allow app proxy account to post on his behalf
  * And if app allow @steemconnect to post on his behalf
@@ -16,8 +16,15 @@ const verifyPermissions = async (req, res, next) => {
   } catch (e) {
     console.error('Unable to load accounts from steemd', req.proxy, req.user, e);
   }
-
-  if (!has(accounts, '[0].name') || !has(accounts, '[1].name')) {
+  console.log(req.proxy)
+  if(blacklist.includes(req.proxy))
+  {
+    res.status(401).json({
+      error: 'unauthorized_client',
+      error_description: `The app @${req.proxy} has been reported for suspicious activities.`,
+    });
+  }
+  else if (!has(accounts, '[0].name') || !has(accounts, '[1].name')) {
     res.status(401).json({
       error: 'unauthorized_client',
       error_description: `The app @${req.proxy} or user @${req.user} account failed to load`,
