@@ -41,11 +41,16 @@ const getAppProfile = (username) => new Promise((resolve, reject) => {
   client.database.getAccounts([username]).then((accounts) => {
     let metadata;
     try {
-      metadata = JSON.parse(accounts[0].json_metadata);
+      metadata = JSON.parse(accounts[0].posting_json_metadata);
       if (metadata.profile && metadata.profile.type && metadata.profile.type === 'app') {
         resolve(metadata.profile);
       } else {
-        reject(`The account @${username} is not an application`);
+        metadata = JSON.parse(accounts[0].json_metadata);
+        if (metadata.profile && metadata.profile.type && metadata.profile.type === 'app') {
+          resolve(metadata.profile);
+        } else {
+          reject(`The account @${username} is not an application`);
+        }
       }
     } catch (e) {
       reject(`Failed to parse account @${username} "json_metadata"`);
